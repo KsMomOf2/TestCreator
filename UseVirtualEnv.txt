@@ -1,0 +1,11 @@
+Creating a virtual environment
+	Download virtual environment software
+	Create virtual environment in folder
+	https://www.pythonforbeginners.com/basics/how-to-use-python-virtualenv
+
+	https://virtualenv.pypa.io/en/latest/userguide/
+
+
+	Keeping your packages:
+
+	pip freeze --local | grep -v myapp > requirements.txt

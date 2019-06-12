@@ -1,5 +1,6 @@
 import docx
-import openpyxl
+
+#import openpyxl
 
 path = 'C:\\My Documents\\Coding Club\\TestCreator\\'
 file = 'SeniorEnglishFinal'
@@ -12,12 +13,14 @@ def getTest():
 
 	qs = []
 	for p in range(4,len(doc.paragraphs)):
-		q = doc.paragraphs[p].text
-		#paragraph = doc.paragraphs[p]
-		for r in doc.paragraphs[p].runs:
+		paragraph = doc.paragraphs[p]
+		q = paragraph.text
+		for r in paragraph.runs:
 			if r.bold:
 				print("Answer")
+			print("run: " + r.style.name)
 		qs.append(q)
+		print("par: " + paragraph.style.name)
 
 	return c, t, i, qs
 
