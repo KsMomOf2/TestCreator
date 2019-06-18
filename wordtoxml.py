@@ -3,11 +3,14 @@ from tkinter import filedialog
 import zipfile
 from lxml import etree
 
+
 class WordToXML:
+
 
 	def __init__(self):
 
 		# Set up the location of the test document
+		# This is used again when determing the name of the xls file
 		self.word_document = self.getFile()		
 		self.xml_etree = self.get_xml_tree(self.word_document)
 
@@ -18,12 +21,15 @@ class WordToXML:
 		directory = 'C:\''
 		title = "Select Test Document"
 		ext = ( ("All Word Documents", "*.docx"),("all files", "*.*"))
-		path_file = filedialog.askopenfilename(initialdir = directory, title = title, filetypes = ext)
+		path_file = filedialog.askopenfilename(initialdir = directory, 
+											   title = title, filetypes = ext)
 
 		return path_file
 
 
-	# reads the word document xml and returns it as a tree.  Could actually just return the very first entry
+	# Reads the word document xml and returns it as a tree.  
+	# Could actually just return the very first entry
+
 	def get_xml_tree(self, docx_filename):
 		with open(docx_filename, 'rb') as f:
 			zip = zipfile.ZipFile(f)

@@ -1,10 +1,12 @@
 import openpyxl
 
+
 class ListToXLS:
 
-	def __init__(self, filename, headings, questions):
+
+	def __init__(self, filename, headers, questions):
 		self.filename = filename[:len(filename)-4] + 'xlsx'
-		self.headers = headings
+		self.headers = headers
 		self.questions = questions
 
 		wb, sheet = self.create_sheet()
@@ -35,7 +37,7 @@ class ListToXLS:
 		for q in self.questions:
 			rowNum = rowNum + 1
 			sheet.cell(row = rowNum, column=1).value = q.number
-			sheet.cell(row = rowNum, column=2).value = q.text
+			sheet.cell(row = rowNum, column=2).value = q.question
 			sheet.cell(row = rowNum, column=3).value = q.answer
 			colNum = 4
 			for c in q.choices:

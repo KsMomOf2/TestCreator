@@ -1,7 +1,9 @@
 import wordtoxml
 import testdata
 
+
 class XMLToList:
+
 
 	def __init__(self):
 		my_XML = wordtoxml.WordToXML()
