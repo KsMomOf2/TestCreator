@@ -16,7 +16,8 @@ class Question:
 
 class Header:
 
-	def __init__(self, section, test_name, instructions):
+	def __init__(self, section = 'Senior English', test_name = 'Exam', 
+				 instructions = 'Write in capital letters.'):
 		self.section = section
 		self.test_name = test_name
 		self.instructions = instructions
@@ -73,7 +74,7 @@ class TestFields:
 		self.question_num = 0
 
 	def __str__(self):
-		result = self.headings.__str__()
+		result = str(self.headings)
 
 	def reset_question(self):
 		self.question_text = ''

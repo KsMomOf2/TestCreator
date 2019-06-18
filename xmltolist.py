@@ -1,13 +1,14 @@
-import WordToXML
-import TestData
+import wordtoxml
+import testdata
 
-class WordToList:
+class XMLToList:
 
 	def __init__(self):
-		my_XML = WordToXML.WordToXML()
+		my_XML = wordtoxml.WordToXML()
+		self.filename = my_XML.word_document
 		self.doc = my_XML.xml_etree[0]
-		self.test_fields = TestData.TestFields()
-		self.headings = TestData.Header()
+		self.test_fields = testdata.TestFields()
+		self.headings = testdata.Header()
 		self.all_questions = []
 
 	def __str__(self):
@@ -17,12 +18,14 @@ class WordToList:
 		return result
 
 	def create_question(self, q):
-		question = TestData.Question(q.question_num, q.question_text, q.choices, q.answer_num)
+		question = testdata.Question(q.question_num, q.question_text, 
+									 q.choices, q.answer_num)
 		return question
 
 	def process_question(self, list_level, q):
 		if list_level == '0':
-		# save the previous question, if there is one (not the first time)
+
+		# save the previous question - there is not one the first time
 			if q.question_num > 0:
 				self.all_questions.append(self.create_question(q))
 			q.question_num = q.question_num + 1
@@ -45,21 +48,22 @@ class WordToList:
 			elif rt.tag[-2:] == '}u':
 				text_tags.underline = True
 			else:
-				answer = False	# ensure only the choice right after the 'b' is marked answer
+				answer = False	# ensure choice right after 'b' is marked answer
 		return answer
 
 	def process_tag_pPr(self, pPr, on_questions, q, text_tags):
 		for pPrtag in pPr:
 			if pPrtag.tag[-5:] == 'numPr':
 				for numtag in pPrtag:
-					if numtag.tag[-4:] == 'ilvl':	#indicates either a question or a choice
+					if numtag.tag[-4:] == 'ilvl':	#indicates question or a choice
 						# if there is a choice, save it now
 						if q.choice_text != '':
 							q.choices.append(q.choice_text)
 							q.choice_text = ''
 						if not on_questions:
-							# save the instructions, which are complete if you have received a list level number
-							self.headings.instructions = text_tags.tag_phrase(q.heading_text)
+							# instructions are complete if you have a level
+							self.headings.instructions = \
+											text_tags.tag_phrase(q.heading_text)
 							on_questions = True
 						level = numtag.attrib.get(numtag.attrib.keys()[0])
 						self.process_question(level, q)							
@@ -84,7 +88,7 @@ class WordToList:
 	def convert_test(self):
 		on_questions = False
 
-		text_tags = TestData.Text_Tags()
+		text_tags = testdata.Text_Tags()
 		tf = self.test_fields
 
 		for paragraph in self.doc:
