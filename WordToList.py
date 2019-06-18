@@ -7,14 +7,11 @@ class WordToList:
 		my_XML = WordToXML.WordToXML()
 		self.doc = my_XML.xml_etree[0]
 		self.test_fields = TestData.TestFields()
-		self.test_files = WordToList.TestFields()
 		self.headings = TestData.Header()
 		self.all_questions = []
 
 	def __str__(self):
-		#result = self.headings.__str__()
-		result = str(self.headings)
-		result = result + '\n\n'
+		result = str(self.headings) + '\n\n'
 		for q in self.all_questions:
 			result = result + str(q) + '\n'
 		return result
@@ -103,29 +100,3 @@ class WordToList:
 
 		#save the last question
 		self.all_questions.append(self.create_question(tf))
-
-
-class TestFields:
-	def __init__(self):
-		self.question_text = ''
-		self.choice_text = ''
-		self.is_question = False
-		self.is_choice = False
-		self.choice_num = 0
-		self.choices = []
-		self.answer_num = 0
-		self.headings = Header()
-		self.heading_num = 0
-		self.heading_text = ''
-		self.question_num = 0
-
-	def __str__(self):
-		result = self.headings.__str__()
-
-	def reset_question(self):
-		self.question_text = ''
-		self.is_question = True
-		self.is_choice = False
-		self.choice_num = 0
-		self.choices = []
-		self.answer_num = 0	
