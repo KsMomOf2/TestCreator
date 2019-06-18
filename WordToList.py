@@ -7,14 +7,17 @@ class WordToList:
 		my_XML = WordToXML.WordToXML()
 		self.doc = my_XML.xml_etree[0]
 		self.test_fields = TestData.TestFields()
+		self.test_files = WordToList.TestFields()
 		self.headings = TestData.Header()
 		self.all_questions = []
 
 	def __str__(self):
-		print(self.headings)
-		print()
+		#result = self.headings.__str__()
+		result = str(self.headings)
+		result = result + '\n\n'
 		for q in self.all_questions:
-			print(q)
+			result = result + str(q) + '\n'
+		return result
 
 	def create_question(self, q):
 		question = TestData.Question(q.question_num, q.question_text, q.choices, q.answer_num)
@@ -48,7 +51,7 @@ class WordToList:
 				answer = False	# ensure only the choice right after the 'b' is marked answer
 		return answer
 
-	def process_tag_pPr(self, pPr, questions, q, text_tags):
+	def process_tag_pPr(self, pPr, on_questions, q, text_tags):
 		for pPrtag in pPr:
 			if pPrtag.tag[-5:] == 'numPr':
 				for numtag in pPrtag:
@@ -57,11 +60,10 @@ class WordToList:
 						if q.choice_text != '':
 							q.choices.append(q.choice_text)
 							q.choice_text = ''
-						if not questions:
+						if not on_questions:
 							# save the instructions, which are complete if you have received a list level number
 							self.headings.instructions = text_tags.tag_phrase(q.heading_text)
-							questions = True
-	#question_num, question_text, choices, answer_num, choice_num, is_question, is_choice, heading_text
+							on_questions = True
 						level = numtag.attrib.get(numtag.attrib.keys()[0])
 						self.process_question(level, q)							
 		return
@@ -83,28 +85,47 @@ class WordToList:
 		return
 
 	def convert_test(self):
-		questions = False
+		on_questions = False
 
 		text_tags = TestData.Text_Tags()
-		qf = self.test_fields
+		tf = self.test_fields
 
 		for paragraph in self.doc:
 			for tg in paragraph:
 				if tg.tag[-2:] == '}r':
 					for rtag in tg:
 						if rtag.tag[-1:] == 't':
-							self.process_tag_text(rtag.text, qf, text_tags)
+							self.process_tag_text(rtag.text, tf, text_tags)
 						if rtag.tag[-3:] == 'rPr':
-							answer = self.process_tag_rPr(rtag, qf, text_tags)
-	#								answer = False	# ensure only the choice right after the 'b' is marked answer
+							answer = self.process_tag_rPr(rtag, tf, text_tags)
 				if tg.tag[-3:] == 'pPr':
-					self.process_tag_pPr(tg, questions, qf, text_tags)
+					self.process_tag_pPr(tg, on_questions, tf, text_tags)
 
 		#save the last question
-		self.all_questions.append(self.create_question(qf))
+		self.all_questions.append(self.create_question(tf))
 
 
-		
+class TestFields:
+	def __init__(self):
+		self.question_text = ''
+		self.choice_text = ''
+		self.is_question = False
+		self.is_choice = False
+		self.choice_num = 0
+		self.choices = []
+		self.answer_num = 0
+		self.headings = Header()
+		self.heading_num = 0
+		self.heading_text = ''
+		self.question_num = 0
 
+	def __str__(self):
+		result = self.headings.__str__()
 
-
+	def reset_question(self):
+		self.question_text = ''
+		self.is_question = True
+		self.is_choice = False
+		self.choice_num = 0
+		self.choices = []
+		self.answer_num = 0	
