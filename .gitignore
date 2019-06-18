@@ -1,5 +1,7 @@
 # Locally desired ignores
 *.xls
+*.xlsx
+~*
 *.xml
 
 # Byte-compiled / optimized / DLL files
