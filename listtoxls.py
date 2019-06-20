@@ -30,7 +30,8 @@ class ListToXLS:
 		sheet.cell(row = 4, column = 3).value = 'Answer'
 		sheet.cell(row = 4, column = 4).value = 'Choices'
 		# name the sheet
-		sheet.title = h.test_name
+		if not h.test_name == '':
+			sheet.title = h.test_name
 
 	def write_questions(self, sheet):
 		rowNum = 5

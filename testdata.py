@@ -52,8 +52,8 @@ class Text_Tags:
 		self.underline = False
 
 	def tag_text(self, text, t):
-		#return '<' + t + '>' + text + '</' + t + '>' 
-		return text + " (" + t + ") "
+		return '<' + t + '>' + text + '</' + t + '>' 
+		#return text + " (" + t + ") "
 
 	def reset_text_tags(self):
 		self.bold = False

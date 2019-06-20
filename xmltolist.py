@@ -40,6 +40,7 @@ class XMLToList:
 		return 
 
 	def process_tag_rPr(self, rtag, q, text_tags):
+		answer = False
 		for rt in rtag:
 			if rt.tag[-2:] == '}b':
 				text_tags.bold = True
