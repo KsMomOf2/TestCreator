@@ -8,6 +8,11 @@ RSIDRP = '007244DA'
 
 ITALIC_TAG = '<i>'
 ITALIC_TAG_END = '</i>'
+BOLD_TAG = '<b>'
+BOLD_TAG_END = '</b>'
+UNDERLINE_TAG = '<u>'
+UNDERLINE_TAG_END = '</u>'
+
 PARAGRPH_START = '<w:p w:rsidRDefault="003F5639" w:rsidR="009705BC">'
 PARAGRAPH_END = '</w:t></w:r>'
 
@@ -15,6 +20,8 @@ ITALIC = '<w:r><w:rPr><w:i/></w:rPr><w:t>'
 BOLD = '<w:r><w:rPr><w:b/></w:rPr><w:t>'
 UNDERLINE = '<w:r><w:rPr><w:u w:val="single"/></w:rPr><w:t>'
 NEW_PARAGRAPH_START = '<w:r><w:t xml:space="preserve">'
+
+CRLF = '\n'
 
 #s = "First Question, it has some <u>underlined</u>and some <i>italicized</i> text."
 
@@ -80,7 +87,10 @@ class ListToTest:
 		return s
 
 	def isBold(self, text):
-		return False
+		if BOLD_TAG in text:
+			return True
+		else:
+			return False
 
 	def isItalic(self, text):
 		if ITALIC_TAG in text:
@@ -89,7 +99,39 @@ class ListToTest:
 			return False
 
 	def isUnderline(self, text):
-		return False
+		if UNDERLINE_TAG in text:
+			return True
+		else:
+			return False
+
+	def isTag(self, text, startTag):
+		if startTag in text:
+			return True
+		else:
+			return False
+
+	def isTagged(self, text, tag=''):
+		if tag=='':
+			return self.isBold(text) or self.isItalic(text) or self.isUnderline(text)
+		elif tag == BOLD_TAG:
+			return self.isBold(text)
+		elif tag == ITALIC_TAG:
+			return self.isItalic(text)
+		elif tag == UNDERLINE_TAG:
+			return self.isUnderline(text)
+		else:
+			return False
+
+	def removeTag(self, text, tagStart, tagEnd):
+		start_index = text.find(tagStart)
+		end_index = text.find(tagEnd)
+		s1 = text[:start_index]
+		s2 = text[start_index+len(tagStart):end_index]
+		s3 = text[end_index+len(tagEnd):]
+		result = s1 + s2 + s3
+		if self.isTagged(result, tagStart):
+			result = self.removeTag(result, tagStart, tagEnd)
+		return result
 
 	def replaceItalicTag(self, text):
 		start_index = text.find(ITALIC_TAG)
@@ -101,23 +143,60 @@ class ListToTest:
 #6. new text = text + s3 ... but, need to check if s3 has any tags.
 
 		result = s1 + PARAGRAPH_END + ITALIC + s2 + \
-					  PARAGRAPH_END + NEW_PARAGRAPH_START
+					  PARAGRAPH_END + NEW_PARAGRAPH_START + s3
 
 		if self.isItalic(result):
-			result = replaceItalicTag(self, result)
+			result = self.replaceItalicTag(result)
 		return result
+
+	def replaceTag(self, text, tagStart, tagEnd, newTagParaStart):
+		start_index = text.find(tagStart)
+		end_index = text.find(tagEnd)
+		s1 = text[:start_index]
+		s2 = text[start_index+len(tagStart):end_index]
+		s3 = text[end_index+len(tagEnd):]
+#5. text = s1 + PARAGRAPH_END + UNDERLINE + s2 + PARAGRAPH_END + NEW_PARAGRAPH_START
+#6. new text = text + s3 ... but, need to check if s3 has any tags.
+
+		result = s1 + PARAGRAPH_END + newTagParaStart + s2 + \
+					  PARAGRAPH_END + NEW_PARAGRAPH_START + s3
+
+		if self.isTag(result, tagStart):
+			result = self.replaceTag(result, tagStart, tagEnd, newTagParaStart)
+		return result
+
+	def replaceTags(self, text):
+		if self.isTagged(text):
+			if self.isBold(text):
+				text = self.removeTag(text, BOLD_TAG, BOLD_TAG_END)
+			if self.isItalic(text):
+				text = self.removeTag(text, ITALIC_TAG, ITALIC_TAG_END)
+			if self.isUnderline(text):
+				text = self.removeTag(text, UNDERLINE_TAG, UNDERLINE_TAG_END)
+		return text
 																				#
 	def createNewXML(self):
 		test = ''
+		xml = []
 		for q in self.questions:
-			if self.isItalic(q.question):
-				q.question = self.replaceItalicTag(q.question)
-				print("Italic: ", q.question)
-			test += self.addQuestion(q.question)
+			xml.append(self.addQuestion(q.question))
 			for c in q.choices:
-				if self.isItalic(c):
-					c = self.replaceItalicTag(c)
-					print("Italic: ", c)
-				test += self.addChoice(c)
+				xml.append(self.addChoice(c))
+		print (xml)
+		for x in xml:
+			#print(q.question)
+			if self.isItalic(x):
+				#q.question = self.replaceItalicTag(q.question)
+				x = self.replaceTag(x, ITALIC_TAG, ITALIC_TAG_END, ITALIC)
+				print("Italic", x)
+			if self.isBold(x):
+				x = self.replaceTag(x, BOLD_TAG, BOLD_TAG_END, BOLD)
+				print("Bold", x)
+			if self.isUnderline(x):
+				x = self.replaceTag(x, UNDERLINE_TAG, UNDERLINE_TAG_END, UNDERLINE)
+				print("Underline", x)
+			#q.question = self.replaceTags(q.question) # temporarily remove all other tags, so xml will work
+			test += x + CRLF
+
 		return test
 
