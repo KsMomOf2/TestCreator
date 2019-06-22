@@ -7,14 +7,15 @@ class XMLToList:
 
 	def __init__(self):
 		my_XML = wordtoxml.WordToXML()
+		self.zip = my_XML.zip
 		self.filename = my_XML.word_document
 		self.doc = my_XML.xml_etree[0]
 		self.test_fields = testdata.TestFields()
-		self.headings = testdata.Header()
+		self.headings = self.test_fields.headings  # for Class, Instructor and instructions
 		self.all_questions = []
 
 	def __str__(self):
-		result = str(self.headings) + '\n\n'
+		result = ''
 		for q in self.all_questions:
 			result = result + str(q) + '\n'
 		return result
@@ -106,4 +107,7 @@ class XMLToList:
 					self.process_tag_pPr(tg, on_questions, tf, text_tags)
 
 		#save the last question
+		if tf.choice_text != '':
+			tf.choices.append(tf.choice_text)
+
 		self.all_questions.append(self.create_question(tf))

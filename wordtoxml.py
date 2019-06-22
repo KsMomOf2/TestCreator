@@ -12,7 +12,7 @@ class WordToXML:
 		# Set up the location of the test document
 		# This is used again when determing the name of the xls file
 		self.word_document = self.getFile()		
-		self.xml_etree = self.get_xml_tree(self.word_document)
+		self.zip, self.xml_etree = self.get_xml_tree(self.word_document)
 
 	def getFile(self):
 		root = tk.Tk()
@@ -34,4 +34,4 @@ class WordToXML:
 		with open(docx_filename, 'rb') as f:
 			zip = zipfile.ZipFile(f)
 			xml_content = zip.read('word/document.xml')
-		return etree.fromstring(xml_content)
+		return zip, etree.fromstring(xml_content)

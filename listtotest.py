@@ -2,6 +2,9 @@ import docx
 from lxml import etree
 from testdata import Teacher
 
+# TODO - this does not work for nested text tags ... need to determine if it is worthwhile
+#		 addressing them
+
 RSIDR = '007244DA'
 RSIDRDEFAULT = '007244DA'
 RSIDRP = '007244DA'
@@ -139,8 +142,6 @@ class ListToTest:
 		s1 = text[:start_index]
 		s2 = text[start_index+len(ITALIC_TAG):end_index]
 		s3 = text[end_index+len(ITALIC_TAG_END):]
-#5. text = s1 + PARAGRAPH_END + UNDERLINE + s2 + PARAGRAPH_END + NEW_PARAGRAPH_START
-#6. new text = text + s3 ... but, need to check if s3 has any tags.
 
 		result = s1 + PARAGRAPH_END + ITALIC + s2 + \
 					  PARAGRAPH_END + NEW_PARAGRAPH_START + s3
@@ -179,22 +180,23 @@ class ListToTest:
 		test = ''
 		xml = []
 		for q in self.questions:
+			#print(q)
 			xml.append(self.addQuestion(q.question))
 			for c in q.choices:
 				xml.append(self.addChoice(c))
-		print (xml)
+		#print (xml)
 		for x in xml:
 			#print(q.question)
 			if self.isItalic(x):
 				#q.question = self.replaceItalicTag(q.question)
 				x = self.replaceTag(x, ITALIC_TAG, ITALIC_TAG_END, ITALIC)
-				print("Italic", x)
+				#print("Italic", x)
 			if self.isBold(x):
 				x = self.replaceTag(x, BOLD_TAG, BOLD_TAG_END, BOLD)
-				print("Bold", x)
+				#print("Bold", x)
 			if self.isUnderline(x):
 				x = self.replaceTag(x, UNDERLINE_TAG, UNDERLINE_TAG_END, UNDERLINE)
-				print("Underline", x)
+				#print("Underline", x)
 			#q.question = self.replaceTags(q.question) # temporarily remove all other tags, so xml will work
 			test += x + CRLF
 
