@@ -179,6 +179,7 @@ class ListToTest:
 	def createNewXML(self):
 		test = ''
 		xml = []
+		xmlArray = []
 		for q in self.questions:
 			#print(q)
 			xml.append(self.addQuestion(q.question))
@@ -199,6 +200,7 @@ class ListToTest:
 				#print("Underline", x)
 			#q.question = self.replaceTags(q.question) # temporarily remove all other tags, so xml will work
 			test += x + CRLF
+			xmlArray.append(x)
 
-		return test
+		return test, xmlArray
 

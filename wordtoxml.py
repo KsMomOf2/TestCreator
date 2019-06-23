@@ -7,11 +7,12 @@ from lxml import etree
 class WordToXML:
 
 
-	def __init__(self):
+	def __init__(self, filename):
 
 		# Set up the location of the test document
 		# This is used again when determing the name of the xls file
-		self.word_document = self.getFile()		
+		#self.word_document = self.getFile()	
+		self.word_document = filename	
 		self.zip, self.xml_etree = self.get_xml_tree(self.word_document)
 
 	def getFile(self):

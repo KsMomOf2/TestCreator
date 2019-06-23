@@ -2,13 +2,14 @@ import wordtoxml
 import xmltolist
 import listtoxls
 import listtotest
-import create_new_xml
+import combinexml
 
+import create_new_xml
 from testdata import Teacher
 
 def __main__():
 
-	template = wordtoxml.WordToXML()
+	template = wordtoxml.WordToXML("word/TestTemplate.docx")
 
 	template_doc = template.word_document
 	template_zip = template.zip
@@ -19,10 +20,10 @@ def __main__():
 	ltx = listtoxls.ListToXLS(test.filename, test.headings, test.all_questions)
 	ltt = listtotest.ListToTest(test.filename, test.headings, test.all_questions, Teacher.NAME)
 
-	new_text = ltt.createNewXML() # this is an xml_string
+	new_text, new_array = ltt.createNewXML() # this is an xml_string and the corresponding xml_array
 
-	create_new_xml.CreateNewXML(template_doc, new_text, test.headings, template_zip)
-
+	#create_new_xml.CreateNewXML(template_doc, new_text, test.headings, template_zip)
+	newXML = combinexml.Combine(template_doc, new_text, new_array, test.headings, template_zip)
 
 
 	# TODO Next Steps ... 

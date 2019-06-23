@@ -6,10 +6,10 @@ class XMLToList:
 
 
 	def __init__(self):
-		my_XML = wordtoxml.WordToXML()
-		self.zip = my_XML.zip
-		self.filename = my_XML.word_document
-		self.doc = my_XML.xml_etree[0]
+		questionsXML = wordtoxml.WordToXML("word/CPIdesofMarch.docx")
+		self.zip = questionsXML.zip
+		self.filename = questionsXML.word_document
+		self.doc = questionsXML.xml_etree[0]
 		self.test_fields = testdata.TestFields()
 		self.headings = self.test_fields.headings  # for Class, Instructor and instructions
 		self.all_questions = []
