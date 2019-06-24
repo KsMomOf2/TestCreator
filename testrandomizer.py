@@ -6,24 +6,31 @@ import combinexml
 
 import create_new_xml
 from testdata import Teacher
+import question_xml as question
 
 def __main__():
 
-	template = wordtoxml.WordToXML("word/TestTemplate.docx")
+	q = question.Questions()
 
-	template_doc = template.word_document
-	template_zip = template.zip
 
-	test = xmltolist.XMLToList()
-	test.convert_test()
 
-	ltx = listtoxls.ListToXLS(test.filename, test.headings, test.all_questions)
-	ltt = listtotest.ListToTest(test.filename, test.headings, test.all_questions, Teacher.NAME)
+	#template = wordtoxml.WordToXML("word/TestTemplate.docx")
 
-	new_text, new_array = ltt.createNewXML() # this is an xml_string and the corresponding xml_array
+	#template_doc = template.word_document
+	#template_zip = template.zip
+
+
+
+	#test = xmltolist.XMLToList()
+	#test.convert_test()
+
+	#ltx = listtoxls.ListToXLS(test.filename, test.headings, test.all_questions)
+	#ltt = listtotest.ListToTest(test.filename, test.headings, test.all_questions, Teacher.NAME)
+
+	#new_text, new_array = ltt.createNewXML() # this is an xml_string and the corresponding xml_array
 
 	#create_new_xml.CreateNewXML(template_doc, new_text, test.headings, template_zip)
-	newXML = combinexml.Combine(template_doc, new_text, new_array, test.headings, template_zip)
+	#newXML = combinexml.Combine(template_doc, new_text, new_array, test.headings, template_zip)
 
 
 	# TODO Next Steps ... 
