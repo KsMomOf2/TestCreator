@@ -36,5 +36,5 @@ class WordToXML:
 		with open(docx_filename, 'rb') as f:
 			zip = zipfile.ZipFile(f)
 			xml_content = zip.read('word/document.xml')
-			print (xml_content)
+			#print (xml_content)
 		return zip, etree.fromstring(xml_content)

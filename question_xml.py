@@ -63,14 +63,16 @@ class Questions:
 
 		#print('\n\nFile String')
 		tree = newWordXML.xml_etree
-		xmlstr = etree.tostring(tree)
 
+		xmlstr = etree.tostring(tree)
+		print(xmlstr)
 		new_file = self.tmp_dir + '/document.xml'
 		print (self.tmp_dir)
 		#with open(os.path.join(self.tmp_dir,'word/document.xml'), 'w') as f:
 		with open(os.path.join(self.tmp_dir,'document.xml'), 'wb') as f:
 			xmlstr = etree.tostring (tree, pretty_print=True)
 			f.write(xmlstr)
+			f.close()
 		#newWordXML.xml_etree.write('newxml.xml')
 
 		#For now, just add all of the tags from the test to the new file
