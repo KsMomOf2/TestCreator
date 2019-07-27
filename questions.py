@@ -1,18 +1,17 @@
-import wordtoxml
 import testdata
 
+class Questions:
+# questionsXML is a WordToXML object
 
-class XMLToList:
+# headings is an object with Class, Instructor, Instructions
+# all_questions is an array of the question/choices/answer objects
+
+	def __init__(self, questionsXML):
 
 
-	def __init__(self):
-		questionsXML = wordtoxml.WordToXML("word/CPIdesofMarch.docx")
-		self.zip = questionsXML.zip
-		self.filename = questionsXML.word_document
-		self.doc = questionsXML.xml_etree[0]
-		self.test_fields = testdata.TestFields()
-		self.headings = self.test_fields.headings  # for Class, Instructor and instructions
+		self.headings = testdata.Header()  # for Class, Instructor and instructions
 		self.all_questions = []
+		self.convert_test(questionsXML.xml_etree[0])
 
 	def __str__(self):
 		result = ''
@@ -89,13 +88,13 @@ class XMLToList:
 				q.heading_text = q.heading_text + text_tags.tag_phrase(text)
 		return
 
-	def convert_test(self):
+	def convert_test(self, doc):
 		on_questions = False
 
+		tf = testdata.TestFields()
 		text_tags = testdata.Text_Tags()
-		tf = self.test_fields
 
-		for paragraph in self.doc:
+		for paragraph in doc:
 			for tg in paragraph:
 				if tg.tag[-2:] == '}r':
 					for rtag in tg:
