@@ -21,26 +21,41 @@ def print_tree(node, level):
 	result += node.tag
 	if node.text is not None:
 	  result += " - " + node.text
-	k = sorted(node.items())
-	if (len(k) > 0):
-		for name, value in k:
-			result += name + "=" + value + ","
-		result += str(sorted(node.keys()))
+	items = sorted(node.items())
+	if (len(items) > 0):
+		result += " attributes: "
+		for name, value in items:
+			result += " [" + name + "=" +  value + "]"
+		#result += str(sorted(node.keys()))
 	print(result)
 	for child in node:
 		print_tree(child, level+1)
 
 def create_question_paragraph(txt, lvl, num):
-	p = etree.Element("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p")
+	p = etree.Element("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p", 
+		rsidP="007244DA",
+		rsidR="007244DA", 
+		rsidRDefault="007244DA")
+	
 	pPr = etree.SubElement(p, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pPr")
-	pStyle = etree.SubElement(pPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pStyle")
+	
+	pStyle = etree.SubElement(pPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pStyle",
+		val="ListParagraph")
+	
 	numPr = etree.SubElement(pPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr")
+	
 	ilvl = etree.SubElement(numPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl",
 	val=lvl)
+	
 	numid = etree.SubElement(numPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numId", 
 		val=num)
-	r = etree.Element("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r")
-	t = etree.SubElement(r,"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t")
+	
+	r = etree.SubElement(p, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r",
+		rsidRPr="00FD3B18")
+	
+	t = etree.SubElement(r,"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t",
+		space="preserve")
+	
 	t.text = txt
 	return p
 
@@ -54,7 +69,7 @@ template = wordtoxml.WordToXML(TEMPLATE_FILE, "Choose the template file")
 #	Write the Template to a new Document
 tmp_dir = template.extract_zip()
 xml_file = tmp_dir + '/word/document.xml'
-
+print(xml_file)
 # Get the xml tree for the test questions/answers file
 
 TEST_FILE = "word/CPIdesOfMarch.docx"
@@ -79,9 +94,9 @@ test_root = test_etree[0]
 #	print(child.tag)
 
 #print_tree(test_root, 0)
-#print_tree(template_root, 0)
+print_tree(template_root, 0)
 
-#find_questions_node(template_root)
+find_questions_node(template_root)
 #print(question_node)
 
 # INSERT a TEMPORARY NODE
@@ -95,8 +110,20 @@ test_root = test_etree[0]
 # Insert the xml tree into the template xml tree
 
 next_question_node = create_question_paragraph("This is the question", "0", "1")
-print_tree(next_question_node, 0)
+print_tree(next_question_node, 2)
+
+question_node.getparent().getparent().getparent().insert(2, next_question_node)
+
+print_tree(template_root,0)
+
+template_xml_string = etree.tostring(test_etree)
+print(template_xml_string)
 
 # Rezip the files into a docx file
 
+
+
 # Write the test file
+
+tree = etree.ElementTree(template_root)
+tree.write('output.xml', pretty_print=True, xml_declaration=True,   encoding="utf-8")
