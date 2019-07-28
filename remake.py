@@ -45,10 +45,10 @@ def create_question_paragraph(txt, lvl, num):
 	numPr = etree.SubElement(pPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr")
 	
 	ilvl = etree.SubElement(numPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl",
-	val=lvl)
+	w:val=lvl)
 	
 	numid = etree.SubElement(numPr, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numId", 
-		val=num)
+		w:val=num)
 	
 	r = etree.SubElement(p, "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r",
 		rsidRPr="00FD3B18")
