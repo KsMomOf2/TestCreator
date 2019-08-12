@@ -7,14 +7,19 @@ class Teacher:
 class Question:
 
 
-	def __init__(self, number, text, choices, answer):
+	def __init__(self, number, text, choices, answer, instructions = None):
 		self.number = str(number)
 		self.question = text
 		self.choices = choices
 		self.answer = str(answer)
+		self.instructions = instructions
 
 	def __str__(self):
-		result = self.number
+		if self.instructions != None:
+			result = self.instructions
+		else:
+			result = ""
+		result += str(self.number)
 		result = result + '. ' + self.question
 		for choice in self.choices:
 			result = result + '\n\t' + choice

@@ -9,20 +9,20 @@ if(min(versions > tol)==0) stop("non-positive value(s) in versions, mcprocessans
 if(min(abs(versions - round(versions)) < tol)==0) stop("non-integer value(s) in versions, mcprocessanswers stopped") 
 if(min(versions-4< tol)==0) stop("value(s) in versions too large, maximum possible value is 4, mcprocessanswers stopped") 
  
-questiondictionary=list(c(),c(),c(1),c())
+questiondictionary=list(c(11,3,14,15,16,17,12,2,6,4,7,8,5,9,10,13,1),c(8,10,3,4,5,15,11,16,2,12,7,6,17,9,1,13,14),c(7,11,8,9,10,3,1,15,4,2,12,17,16,13,14,5,6),c(13,12,3,4,5,9,2,11,16,17,14,15,1,6,7,8,10))
  
 randomizedanswersdictionary=list(
- list(c(4,3,1,2,5))
- ,list(c(4,1,3,2,5))
- ,list(c(2,1,3,4,5))
- ,list(c(4,1,2,3,5))
+ list(c(3,1,2,4,5),c(3,4,1,2),c(4,1,2,3),c(1,2,3,4,5),c(2,1,3,4),c(2,1,4,3),c(4,1,3,2),c(4,3,2,1),c(3,4,1,2),c(4,3,2,1),c(4,2,1,3),c(4,3,1,2),c(4,3,2,1),c(4,3,2,1),c(2,4,1,3),c(1,2,3,4),c(1,2))
+ ,list(c(4,3,1,2,5),c(3,4,2,1),c(1,2,3,4),c(5,4,3,2,1),c(1,2,3,4),c(3,4,1,2),c(2,1,3,4),c(4,3,2,1),c(2,1,3,4),c(4,3,2,1),c(3,1,2,4),c(4,2,3,1),c(4,2,3,1),c(1,2,3,4),c(3,4,2,1),c(2,1,3,4),c(1,2))
+ ,list(c(3,2,1,4,5),c(3,1,2,4),c(3,4,1,2),c(5,4,3,2,1),c(2,1,3,4),c(1,2,3,4),c(4,1,2,3),c(1,2,3,4),c(3,4,1,2),c(2,1,3,4),c(1,4,3,2),c(3,2,4,1),c(1,3,2,4),c(4,3,2,1),c(1,4,3,2),c(2,1,3,4),c(1,2))
+ ,list(c(2,4,1,3,5),c(2,3,1,4),c(4,1,2,3),c(1,2,3,4,5),c(2,1,3,4),c(4,3,2,1),c(2,4,3,1),c(1,2,3,4),c(3,2,4,1),c(4,1,2,3),c(1,4,2,3),c(3,2,4,1),c(1,2,3,4),c(1,2,3,4),c(1,4,3,2),c(1,2,3,4),c(1,2))
  )
  
-correctiondictionary=list(c(1,0,0,0,0))
+correctiondictionary=list(c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c(),c())
  
 Nversions=4; 
-Nquestions=1;
-Nanswers=c(5);
+Nquestions=17;
+Nanswers=c(5,4,4,5,4,4,4,4,4,4,4,4,4,4,4,4,2);
 Nstudents=nrow(answers);
  
 Q <- matrix(NA,nrow=Nstudents,ncol=Nquestions); 
@@ -38,7 +38,6 @@ Points=apply(P,1,sum);
 outputdata <- data.frame(ID=ID,versions=versions,originalQuestion=Q,pointsQuestion=P,total=Points); 
  
 p <- apply(P,2,mean); 
-p.cor <- apply(P,2,mean) - (1-apply(P,2,mean))/(Nanswers-unlist(lapply(correctiondictionary,sum))); 
 r.cor <- NULL; 
 for (i in 1:Nquestions){
  r.cor[i] <- ifelse(var(P[,i])==0,0,cor(P[,i],apply(P[,-i],1,sum))); 
@@ -47,7 +46,7 @@ for (i in 1:Nquestions){
 Nquestions.cor <- sum(apply(P,2,var)>0); 
 alpha <- (Nquestions.cor/(Nquestions.cor-1))*(1-(sum(apply(P,2,var))/var(Points))); 
  
-outputfilename=file.path(path,"Exam1.ana"); 
+outputfilename=file.path(path,"mcexam_example.ana"); 
 write("\\makeatletter",outputfilename) ; 
  
 formatnumber <- function(x) {
@@ -60,21 +59,6 @@ formatnumber <- function(x) {
 write(c( 
  "\\gdef\\mc@questionAnalysisTable{", 
  " \\begin{setmcquestionanalysistable}", 
- " \\begin{longtable}{cccc}", 
- " & \\mc@babel@Proportion & \\mc@babel@Corrected & \\mc@babel@Item@rest \\\\", 
- " & \\mc@babel@correct & \\mc@babel@proportion & \\mc@babel@correlation \\\\", 
- " \\hline", 
- " \\mc@babel@Question \\\\", 
- " \\endhead", 
- " \\hline", 
- " \\endfoot", 
- " \\hline", 
- paste0(" \\multicolumn{4}{l}{\\mc@babel@Number@of@students\\ = ",Nstudents,"}\\\\"), 
- paste0(" \\multicolumn{4}{l}{Cronbach's alpha = ",sprintf("%.3f",alpha),"}\\\\"), 
- " \\endlastfoot ", 
- paste0(" \\setcounter{mc@counter}{",1:ncol(answers),"}\\mcquestionlabelfmt{mc@counter}& " 
- ,formatnumber(p)," & ",formatnumber(p.cor)," & ",formatnumber(r.cor)," \\\\"), 
- " \\end{longtable}", 
  " \\end{setmcquestionanalysistable}", 
  " }" 
  ),outputfilename,append=TRUE) ; 
@@ -101,10 +85,6 @@ write(c(
  " \\mc@babel@Answer \\\\", 
  paste0(labels," & ",props,"\\\\"), 
  " \\hline", 
- paste0(" \\multicolumn{",Nversions+2,"}{l}{\\mc@babel@Proportion@correct\\ = ", 
- sprintf("%.3f",p[i]),"}\\\\"), 
- paste0(" \\multicolumn{",Nversions+2,"}{l}{\\mc@babel@Corrected@proportion\\ = ", 
- sprintf("%.3f",p.cor[i]),"}\\\\"), 
  paste0(" \\multicolumn{",Nversions+2,"}{l}{\\mc@babel@Item@rest@correlation\\ = ", 
  sprintf("%.3f",r.cor[i]),"}\\\\"), 
  " \\end{tabular}", 

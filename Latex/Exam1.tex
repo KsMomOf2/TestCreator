@@ -1,24 +1,48 @@
-\documentclass{exam}
-\usepackage{mcexam}
-% output: concept, exam, key, answers, analysis
+%%% Copyright (c) 2017 Jorre Vannieuwenhuyze.
+%%%
+%%% Permission is granted to copy, distribute and/or modify this
+%%% software under the terms of the LaTeX Project Public License
+%%% (LPPL), version 1.3c or any later version.
+%%%
+%%% This software is provided 'as is', without warranty of any kind,
+%%% either expressed or implied, including, but not limited to, the
+%%% implied warranties of merchantability and fitness for a
+%%% particular purpose.
+
+
+\documentclass[a4paper]{article}
+
+\usepackage[output=concept
+           ,numberofversions=4
+           ,version=1
+           ,seed=1
+           ,randomizequestions=true
+           ,randomizeanswers=true
+           ,writeRfile=true
+           ]{mcexam}
+
 \begin{document}
-% Document Format
-% Header
-% Footer
-% Questions and Answers
-	\begin{mcquestions}
-		\question Question1
-			\begin{mcanswerslist}
-				\answer blue
-				\answer[correct] red
-			\end{mcanswerslist}
-			\question What is the color of the sky?
-\begin{mcanswerslist}[fixlast]
-\answer blue
-\answer green
-\answer red
-\answer yellow
-\answer none of the above
-\end{mcanswerslist}1
-	\end{mcquestions}
+
+\begin{mcquestions}
+
+\question What is the color of the sky?
+         
+          \begin{mcanswerslist}[fixlast]
+          \answer[correct] blue
+          \answer green
+          \answer red
+          \answer yellow
+          \answer none of the above
+          \end{mcanswerslist}        
+          
+          \begin{mcexplanation}
+          If you look up to the sky and there are no clouds, you'll see it is blue.
+          \end{mcexplanation}
+                   
+          \begin{mcnotes}
+          This question had a large proportion of good answers last year.
+          \end{mcnotes}
+ 
+ \end{mcquestions}
+ 
 \end{document}
