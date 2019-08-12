@@ -1,6 +1,6 @@
 import wordtoxml
 import questions
-import latex
+#import latex
 
 from lxml import etree
 

@@ -33,19 +33,6 @@ def keep_qandas_together():
     arg3 = NoEscape(endMiniPgCmd.dumps()+parCmd.dumps())
     return Arguments('setmcquestion', arg2 , arg3)
 
-def fill_document(doc):
-    """Add a section, a subsection and some text to the document.
-
-    :param doc: the document
-    :type doc: :class:`pylatex.document.Document` instance
-    """
-    with doc.create(Section('A section')):
-        doc.append('Some regular text and some ')
-        doc.append(italic('italic text. '))
-
-        with doc.create(Subsection('A subsection')):
-            doc.append('Also some crazy characters: $&#{}')
-
 def addQuestion(question):
     global doc
     if question.instructions != None:
@@ -93,21 +80,12 @@ def men():
     add_allQs()
     doc.append(Command('end', 'mcquestions'))
 
- #   doc.preamble.append(Command('title', 'Awesome TitBle'))
- #   doc.preamble.append(Command('author', 'Anonymous author'))
- #   doc.preamble.append(Command('date', NoEscape(r'\today')))
- #   doc.append(NoEscape(r'\maketitle'))
-
- #   fill_document(doc)
-
- #
-    # Add stuff to the document
- #   with doc.create(Section('A second section')):
- #       doc.append('Some text.')
 
     doc.generate_pdf('basic_maketitle2', clean_tex=False, compiler='pdflatex')
     #tex = doc.dumps()  # The document as string in LaTeX syntax
     #print("\nText: \n" + tex + "\n")
+
+# Just creating a few questions for testing purposes.
 
 def create_qs():
     global all_qs
