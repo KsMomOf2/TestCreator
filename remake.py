@@ -1,7 +1,6 @@
 import wordtoxml
 import questions
-#import latex
-
+import testcreator
 from lxml import etree
 
 def print_tree(node, level):
@@ -21,27 +20,16 @@ def print_tree(node, level):
 	for child in node:
 		print_tree(child, level+1)
 
-
-# Get the xml tree for the template file
-
-#	This is a temporary assignment and should be replaced by allowing the 
-#	user to specify the template file
-TEMPLATE_FILE = "word/TestTemplate.docx"
-template = wordtoxml.WordToXML(TEMPLATE_FILE, "Choose the template file")
-
-tmp_dir = template.extract_zip()
-xml_file = tmp_dir + '/word/document.xml'
-print(xml_file)
-
-# Get the xml tree for the test questions/answers file
-
-TEST_FILE = "word/CPIdesOfMarch.docx"
-test = wordtoxml.WordToXML(TEST_FILE, "Choose the test file")
+TEST_FILE = "C:/My Documents/Coding Club/TestCreator/word/CPIdesOfMarch.docx"
+#TEST_FILE = None
+word = wordtoxml.WordToXML(TEST_FILE, "Choose the test file")
 
 # Evaluate the questions/answers, determine questions and answers
-questionsArray = questions.Questions(test)
+test = questions.Questions(word)
 
-for q in questionsArray.all_questions:
-	print(q)
+testcreator.TestCreator(test)
+
+#for q in test.all_questions:
+#	print(q)
 
 

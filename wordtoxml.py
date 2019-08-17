@@ -3,6 +3,7 @@ from tkinter import filedialog
 import zipfile
 import tempfile
 from lxml import etree
+import os
 
 
 class WordToXML:
@@ -13,16 +14,16 @@ class WordToXML:
 
 #	Instantiating the WordToXML class fills all of the properties
 
-	def __init__(self, filename='', title = "Select Word File"):
+	def __init__(self, filename=None, title = "Select Word File"):
 
 		# Set up the location of the document
 
-		if filename == '':
+		if filename == None:
 			self.word_document = self.getFile(title)
 		else:
 			self.word_document = filename	
 		self.zip, self.xml_etree = self.get_xml_tree()
-
+		self.folder = os.path.split(self.word_document)[0]
 
 #	Using tkinter, allow the user to select a file (specifically a docx file)
 #	Return the file name complete with its path.

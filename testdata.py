@@ -56,8 +56,13 @@ class Text_Tags:
 		self.italic = False
 		self.underline = False
 
-	def tag_text(self, text, t):
-		return '<' + t + '>' + text + '</' + t + '>' 
+	def tag_text(self, text, texttag):
+		brace = f"{{"
+		endbrace = f"}}"
+		backslash = f"\\"
+		tagged = backslash + texttag + brace + text + endbrace
+		print (tagged)
+		return tagged
 		#return text + " (" + t + ") "
 
 	def reset_text_tags(self):
@@ -68,11 +73,11 @@ class Text_Tags:
 	def tag_phrase(self, text):
 		tagged_text = text
 		if self.bold:
-			tagged_text = self.tag_text(tagged_text,'b')
+			tagged_text = self.tag_text(tagged_text,'textbf')
 		if self.underline:
-			tagged_text = self.tag_text(tagged_text, 'u')
+			tagged_text = self.tag_text(tagged_text, 'underline')
 		if self.italic:
-			tagged_text = self.tag_text(tagged_text, 'i')
+			tagged_text = self.tag_text(tagged_text, 'textit')
 		self.reset_text_tags()
 		return tagged_text
 

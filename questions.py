@@ -11,6 +11,8 @@ class Questions:
 
 		self.headings = testdata.Header()  # for Class, Instructor and instructions
 		self.all_questions = []
+		self.folder = questionsXML.folder
+		self.wordfile=questionsXML.word_document
 		self.convert_test(questionsXML.xml_etree[0])
 
 	def __str__(self):
