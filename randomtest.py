@@ -1,7 +1,16 @@
 import wordtoxml
 import questions
 import testcreator
+import listtoxls
 from lxml import etree
+
+# After running this, to make sure the page numbers are correct
+# run latex -pdf filename.tex from the command line (eventually using perl)
+# TODO
+#		Fix text that is both italicized and underlined
+#		Consider moving the underline to the right margin
+#		Is the vertical space between questions too big
+#		Test the code on different files and folders
 
 def print_tree(node, level):
 	result = ""
@@ -27,9 +36,8 @@ word = wordtoxml.WordToXML(TEST_FILE, "Choose the test file")
 # Evaluate the questions/answers, determine questions and answers
 test = questions.Questions(word)
 
+# Save information stripped from word into an excel document
+listtoxls.ListToXLS(TEST_FILE, test.headings, test.all_questions)
+
+# Create the LaTeX document and the test versions
 testcreator.TestCreator(test)
-
-#for q in test.all_questions:
-#	print(q)
-
-

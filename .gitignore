@@ -3,6 +3,12 @@
 *.xlsx
 ~*
 *.xml
+*.tex
+*.pdf
+*.docx
+.gz
+.r
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

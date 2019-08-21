@@ -2,9 +2,10 @@ from testdata import Question as q
 from testdata import Teacher
 from questions import Questions as qs
 
-from pylatex import Document, Package, PageStyle, Head, Foot, LineBreak, simple_page_number, Section, Subsection, Command
+from pylatex import Document, Package, PageStyle, Head, Foot, LineBreak, simple_page_number, \
+Section, Subsection, Command, HorizontalSpace
 
-from pylatex.utils import italic, NoEscape
+from pylatex.utils import italic, bold, NoEscape
 
 from pylatex.base_classes.command import Arguments
 from pylatex.base_classes.command import Options
@@ -25,7 +26,6 @@ class TestCreator:
         with header.create(Head("C")):
             header.append(instructor)
             header.append(LineBreak())
-#            header.append("")
         with header.create(Head("L")):
             header.append(section)
             header.append(LineBreak())
@@ -64,21 +64,14 @@ class TestCreator:
         arg3 = NoEscape(endMiniPgCmd.dumps()+parCmd.dumps())
         return Arguments('setmcquestion', arg2 , arg3)
 
-    def addQuestion(self, question):
-        if question.instructions != None:
-            self.doc.append(Command('begin', 'mcquestioninstruction'))
-            self.doc.append(question.instructions)
-            self.doc.append(Command('end','mcquestioninstruction'))
-        
-        self.doc.append(Command('question'))
-        self.doc.append(question.question)
+    def addAnswerList(self, question):
+        self.doc.append(Command('begin', arguments='mcanswerslist'))
 
-        # TODO this does not work properly - to fix the last answer in place 
-        # ... the order is wrong in the resulting latex.  Need to figure it out
-        #ans = Command('begin', extra_arguments = None, arguments='mcanswerslist', options='fixlast')
-        ans = Command('begin', arguments='mcanswerslist')
-        self.doc.append(ans)
-    #    print(ans.dumps())
+        if question.alloftheabove and question.noneoftheabove:
+            self.doc.append(NoEscape("[permutenone]"))
+        elif question.alloftheabove or question.noneoftheabove:
+            self.doc.append(NoEscape("[fixlast]"))
+  
         for index in range(0, len(question.choices)):
             if str(index + 1) == question.answer:
                 opt = 'correct'
@@ -86,18 +79,69 @@ class TestCreator:
                 opt = ''
 
             self.doc.append(Command('answer', options=opt))
-            self.doc.append(question.choices[index])
+            self.strip_tags(question.choices[index])
+
         self.doc.append(Command('end', 'mcanswerslist'))
 
+
+    def addQuestion(self, question):
+        if question.instructions != None:
+            self.doc.append(Command('begin', 'mcquestioninstruction'))
+            self.doc.append(question.instructions)           
+            self.doc.append(Command('end','mcquestioninstruction'))
+        
+        self.doc.append(Command('question'))
+        self.strip_tags(question.question)
+
+        self.addAnswerList(question)
+
+        
     def add_allQs(self):
-     
         for quest in self.all_qs:
             self.addQuestion(quest)
 
+    def strip_tags(self, string):
+        while '\\' in string:
+            # Find slash, grab the text before the slash (left), find the other locations
+            # that are key - the braces - and grab the key and the emphaszied text, then
+            # send the rest of the rest of the string back through the while loop in case
+            # there are other tags that need to be stripped
+            # TODO: what happens if text is both italicized and underlined?
+
+            slashLocation = string.find('\\')
+            left = string[:slashLocation]
+            textStart = string.find('{')
+            tag = string[slashLocation+1:textStart]
+            tagEnd = string.find('}')
+            emphasizedText = string[textStart+1:tagEnd]
+#            if '\\' in emphasizedText:
+                # so ... with a double tag ... you have to 
+                # update where the tagEnd is, put the left stuff in the document
+                # put the first tag in and the first part of the emphasized text in
+                # then the strip the tags from the new emphasized text
+                # and what do you do with the right side ... hmmmm
+#                self.strip_tags(emphasizedText)
+
+            # Append the text as appropriate
+            self.doc.append(left)
+            if tag =='underline':
+                self.doc.append(Command('underline', emphasizedText)) 
+            elif tag == 'textit':
+                self.doc.append(italic(emphasizedText)) 
+            elif tag == 'textbf':
+                self.doc.append(bold(emphasizedText))
+            else:
+                self.doc.append(emphasizedText)
+            if string[tagEnd+1:tagEnd+2]==' ': # Force a space
+                self.doc.append(bold(' '))
+            string = string[tagEnd+1:]  # remove what was added to the doc already from the string
+#   After the while loop is done, if there is any string left, append it (it is not emphasized)
+        self.doc.append(string)
+
+
     def add_instructions(self, instructions):
-        self.doc.append(Command('begin','mcquestioninstruction'))
-        self.doc.append(instructions)
-        self.doc.append(Command('end','mcquestioninstruction'))
+        # Leaving this in its own method in case we want to add different formatting for the instructions
+        self.strip_tags(instructions)
 
  
     def add_mcexam_package(self, output='exam', version=1, versions=4, randomq='true', randoma='true'):
@@ -108,6 +152,13 @@ class TestCreator:
                 randomq=randomq, 
                 randoma=randoma))
 
+    def add_packages(self, output, version, versions=4, randomq='true', randoma='true'):
+    #        self.doc.packages.append(Package('mcexam', self.mcExamOptions('concept', 4, 1, 'true', 'true')))
+        self.doc.packages.append(self.add_mcexam_package( output, version, versions, randomq, randoma))
+        self.doc.packages.append(Package('calc'))
+        self.doc.packages.append(Package('geometry', options='margin=0.75in'))
+
+
     def convert(self, versions=4, randomq='true', randoma='true'):
         #create_qs()
         newfolder = self.folder + '/' + self.filename
@@ -117,15 +168,12 @@ class TestCreator:
         output = 'exam' # output needs to run through a list to get all versions
         for output in {'exam', 'answers', 'key'}:
             for version in range(1, versions+1):
-                if output == 'key' and version > 1:
+                if output == 'key' and version > 1: # Only create 1 key document with all versions
                     break
-                self.doc = Document(document_options="letter")
-      
-    #        self.doc.packages.append(Package('mcexam', self.mcExamOptions('concept', 4, 1, 'true', 'true')))
-                self.doc.packages.append(self.add_mcexam_package( output, version, versions, randomq, randoma))
 
-                self.doc.packages.append(Package('calc'))
-                self.doc.packages.append(Package('geometry', options='margin=0.75in'))
+                self.doc = Document(document_options="letter")
+                self.add_packages(output, version, versions, randomq, randoma)
+
                 self.doc.preamble.append(Command(command='renewenvironment', arguments=self.keep_qandas_together()))
                 self.doc.preamble.append(self.generate_header(output,
                     Teacher.NAME, 
@@ -134,8 +182,8 @@ class TestCreator:
                     version))
                 self.doc.change_document_style("header")
 
-                self.doc.append(Command('begin','mcquestions'))
                 self.add_instructions(self.headers.instructions)
+                self.doc.append(Command('begin','mcquestions'))
                 self.add_allQs()
                 self.doc.append(Command('end', 'mcquestions'))
 
@@ -144,8 +192,8 @@ class TestCreator:
                     newfilename = newfolder+'/'+self.filename+'_'+output
                 else:
                     newfilename = newfolder+'/'+self.filename+'_'+output+'_v'+str(version)
-                print(newfilename)
                 self.doc.generate_pdf(newfilename, clean_tex=False, compiler='pdflatex')
+                print("." + " " + newfilename)
                 #tex = doc.dumps()  # The document as string in LaTeX syntax
                 #print("\nText: \n" + tex + "\n")
 

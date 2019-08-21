@@ -23,7 +23,7 @@ class Questions:
 
 	def create_question(self, q):
 		question = testdata.Question(q.question_num, q.question_text, 
-									 q.choices, q.answer_num)
+									 q.choices, q.answer_num, q.alloftheabove, q.noneoftheabove)
 		return question
 
 	def process_question(self, list_level, q):
@@ -41,6 +41,7 @@ class Questions:
 			q.is_choice = True
 		return 
 
+# The answers are in the rPr tag
 	def process_tag_rPr(self, rtag, q, text_tags):
 		answer = False
 		for rt in rtag:
@@ -56,6 +57,35 @@ class Questions:
 				answer = False	# ensure choice right after 'b' is marked answer
 		return answer
 
+	def remove_end_comma(self, choice):
+		if choice[-1:] == "}":
+			save = '}'
+		else:
+			save = ''
+# TODO: This does not work for a choice that ends: "word, I" 
+		if ',' in choice[-3:]:
+			if choice[-1:] == ',':
+				choice = choice[:-1]
+			if choice[-2:-1] == ',':
+				choice = choice[:-2]
+			if choice[-3:-2] == ',':
+				# TODO need to make sure that there are no non-brace char at the end
+				choice = choice[:-3]
+			return choice + save
+		return choice
+
+
+	def add_choice(self, q):
+		q.choice_text = self.remove_end_comma(q.choice_text)		
+		if q.choice_text != '':
+			if 'none of the above' in q.choice_text:
+				q.noneoftheabove = True
+			if 'all of the above' in q.choice_text:
+				q.alloftheabove = True
+			q.choices.append(q.choice_text)
+			q.choice_text = ''
+		
+
 	def process_tag_pPr(self, pPr, on_questions, q, text_tags):
 		for pPrtag in pPr:
 			if pPrtag.tag[-5:] == 'numPr':
@@ -63,8 +93,13 @@ class Questions:
 					if numtag.tag[-4:] == 'ilvl':	#indicates question or a choice
 						# if there is a choice, save it now
 						if q.choice_text != '':
-							q.choices.append(q.choice_text)
-							q.choice_text = ''
+							self.add_choice(q)
+#							if 'none of the above' in q.choice_text:
+#								q.noneoftheabove = True
+#							if 'all of the above' in q.choice_text:
+#								q.alloftheabove = True
+#							q.choices.append(q.choice_text)
+#							q.choice_text = ''
 						if not on_questions:
 							# instructions are complete if you have a level
 							self.headings.instructions = \
@@ -78,9 +113,9 @@ class Questions:
 		if q.is_question:
 			q.question_text = q.question_text + text_tags.tag_phrase(text)
 		elif q.is_choice:
-			text_tags.bold = False # do not keep the bolded answer choice
+			text_tags.bold = False # do not keep the answer choice bolded
 			q.choice_text = q.choice_text + text_tags.tag_phrase(text)
-		else: # it is a heading
+		else: # it is a heading, 1st line contains section, 2nd test name
 			q.heading_num = q.heading_num + 1
 			if q.heading_num == 1:
 				self.headings.section = text
@@ -91,7 +126,7 @@ class Questions:
 		return
 
 	def convert_test(self, doc):
-		on_questions = False
+		on_questions = False	# changed to true after headers are processed
 
 		tf = testdata.TestFields()
 		text_tags = testdata.Text_Tags()
@@ -109,6 +144,12 @@ class Questions:
 
 		#save the last question
 		if tf.choice_text != '':
-			tf.choices.append(tf.choice_text)
+			self.add_choice(tf)
+
+#			if 'none of the above' in tf.choice_text:
+#				tf.noneoftheabove = True
+#			if 'all of the above' in tf.choice_text:
+#				tf.alloftheabove = True
+#			tf.choices.append(tf.choice_text)
 
 		self.all_questions.append(self.create_question(tf))

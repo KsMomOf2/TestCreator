@@ -5,14 +5,16 @@ class Teacher:
 
 
 class Question:
+# TODO - make the actual tags we are using for bold, italic, and underline literals, so they can be easily changed
 
-
-	def __init__(self, number, text, choices, answer, instructions = None):
+	def __init__(self, number, text, choices, answer, alloftheabove=False, noneoftheabove=False, instructions = None):
 		self.number = str(number)
 		self.question = text
 		self.choices = choices
 		self.answer = str(answer)
 		self.instructions = instructions
+		self.alloftheabove = alloftheabove
+		self.noneoftheabove = noneoftheabove
 
 	def __str__(self):
 		if self.instructions != None:
@@ -61,7 +63,6 @@ class Text_Tags:
 		endbrace = f"}}"
 		backslash = f"\\"
 		tagged = backslash + texttag + brace + text + endbrace
-		print (tagged)
 		return tagged
 		#return text + " (" + t + ") "
 
@@ -95,6 +96,8 @@ class TestFields:
 		self.heading_num = 0
 		self.heading_text = ''
 		self.question_num = 0
+		self.noneoftheabove = False
+		self.alloftheabove = False
 
 	def __str__(self):
 		result = str(self.headings)
@@ -106,3 +109,5 @@ class TestFields:
 		self.choice_num = 0
 		self.choices = []
 		self.answer_num = 0	
+		self.alloftheabove = False
+		self.noneoftheabove = False
