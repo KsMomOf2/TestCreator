@@ -30,14 +30,15 @@ def print_tree(node, level):
 		print_tree(child, level+1)
 
 TEST_FILE = "C:/My Documents/Coding Club/TestCreator/word/CPIdesOfMarch.docx"
-#TEST_FILE = None
+TEST_FILE = None
+#TEST_FILE = "C:/My Documents/Coding Club/TestCreator/word/2019 Final Exam I HN.docx"
 word = wordtoxml.WordToXML(TEST_FILE, "Choose the test file")
 
 # Evaluate the questions/answers, determine questions and answers
 test = questions.Questions(word)
 
 # Save information stripped from word into an excel document
-listtoxls.ListToXLS(TEST_FILE, test.headings, test.all_questions)
+listtoxls.ListToXLS(word.word_document, test.headings, test.all_questions)
 
 # Create the LaTeX document and the test versions
 testcreator.TestCreator(test)

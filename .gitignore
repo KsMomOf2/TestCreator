@@ -8,7 +8,11 @@
 *.docx
 .gz
 .r
-
+filestodelete/
+Latex/examples/
+Latex/Tutorials/
+OldCode/
+word/OtherDocs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
